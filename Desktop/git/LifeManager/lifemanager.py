@@ -2,9 +2,7 @@ import time
 import pygame
 
 def main():
-    play_mp3("./static/music/song.wav")
-    pygame.mixer.music.play(-1)
-
+    play_mp3("./static/music/song.mp3", -1)
     minimum = {0:5, 1:15, 2:40, 3:10}
     importance = {0:4, 1:3, 2:14, 3:3}
     names = {0:"Willing Power", 1:"Allah", 2:"Finance", 3:"Body"}
@@ -14,10 +12,10 @@ def main():
     display(names, importance)
     work(importance, names)
 
-def play_mp3(file_path):
+def play_mp3(file_path, number_of_play):
     pygame.mixer.init()
     pygame.mixer.music.load(file_path)
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(number_of_play)
 
 def work(importance, names):
     """last_task = list(importance.keys())[-1] 
@@ -91,6 +89,7 @@ def missions(dict, minimum, user_time ):
         return minimum
 
 def resting():
+    play_mp3("./static/music/song.mp3", -1)
     user_time  = get_digit("Determine Resting Time, minimum is 1 minutes: ", 1)
     print("Now You are Resting...")
     timer(user_time )
