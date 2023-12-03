@@ -1,13 +1,14 @@
 import time
 import pygame
 
+menu_music_path = "./static/music/song.mp3"
 def main():
-    play_mp3("./static/music/song.mp3", -1)
-    minimum = {0:5, 1:15, 2:40, 3:10}
-    importance = {0:4, 1:3, 2:14, 3:3}
-    names = {0:"Willing Power", 1:"Allah", 2:"Finance", 3:"Body"}
+    play_mp3(menu_music_path ,-1)
+    minimum = {0:15, 1:5, 2:40, 3:10}
+    importance = {0:3, 1:4, 2:14, 3:3}
+    names = {0:"Allah", 1:"Willing Power", 2:"Finance", 3:"Body"}
     user_time  = get_digit("Enter a time that you want to dedicate in a minute format above 5 minute: ", 5)
-    importance = missions(importance, minimum, user_time )
+    importance = missions(importance, minimum, user_time, names )
     extra()
     display(names, importance)
     work(importance, names)
@@ -34,6 +35,8 @@ def work(importance, names):
         value = importance.pop(key)
         print(f"Now It is time to work on {names[key]}...")
         input(f"When you feel comfortable press Enter to start your work for {value} minutes : ")
+        if pygame.mixer.music.get_busy():  # Check if music is currently playing
+            pygame.mixer.music.stop()
         timer(value)
         if importance:
             resting()
@@ -64,10 +67,11 @@ def timer(_minute):
         time.sleep(1)
         second -= 1
 
-def missions(dict, minimum, user_time ):
-    print("Here is your priorities. Please read and type the option that you are worst now.\n")
-    answer = get_digit("0. Willing Power [0]\n1. Allah         [1]\n2.a) Finance     [2]\n2.b) Body        [3]\nOption: ", 0, 3)
-
+def missions(dict, minimum, user_time, names ):
+    for name in names:
+        print(f"{name}. {names[name]}   [{name}]")
+    answer = get_digit("Here is your priorities. Please read and type the option that you are worst now.\n", 0, 3)
+    
     if user_time  > 70:  
         dict[answer] *= 2
         total = 0
@@ -89,7 +93,7 @@ def missions(dict, minimum, user_time ):
         return minimum
 
 def resting():
-    play_mp3("./static/music/song.mp3", -1)
+    play_mp3(menu_music_path ,-1)
     user_time  = get_digit("Determine Resting Time, minimum is 1 minutes: ", 1)
     print("Now You are Resting...")
     timer(user_time )
@@ -100,6 +104,8 @@ def extra():
         user_time  = get_digit("Enter a time that you want to dedicate in a minute format to extra work: ", 1)
         input("Press Enter to start your extra work: ")
         print(f"Now It is time to work on extra work...")
+        if pygame.mixer.music.get_busy():  # Check if music is currently playing
+            pygame.mixer.music.stop()
         timer(user_time )
         resting()
 
