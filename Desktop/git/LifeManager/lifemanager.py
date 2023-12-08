@@ -1,10 +1,27 @@
 import time
 import pygame
 import keyboard
+import random
 
-menu_music_path = "./static/music/song.mp3"
+timestamps = {
+    '00:00': 0,
+    '05:37': 337,
+    '10:54': 654,
+    '12:13': 733,
+    '16:15': 975,
+    '21:10': 1270,
+    '26:40': 1600,
+    '28:18': 1698,
+    '38:40': 2320,
+    '41:38': 2498,
+    '43:24': 2604,
+    '50:29': 3029,
+    '54:13': 3253,
+    '59:23': 3563
+}
+menu_music_path = "./static/music/play_list.mp3"
 def main():
-    play_mp3(menu_music_path ,-1)
+    play_mp3(menu_music_path ,-1, timestamps)
     minimum = {0:15, 1:5, 2:40, 3:10}
     importance = {0:3, 1:4, 2:14, 3:3}
     names = {0:"Allah", 1:"Willing Power", 2:"Finance", 3:"Body"}
@@ -14,10 +31,15 @@ def main():
     display(names, importance)
     work(importance, names)
 
-def play_mp3(file_path, number_of_play):
+def play_mp3(file_path, number_of_play, time_stamps):
     pygame.mixer.init()
     pygame.mixer.music.load(file_path)
+    starting = random.choice(list(time_stamps.keys()))
     pygame.mixer.music.play(number_of_play)
+    if pygame.mixer.music.get_busy(): 
+        pygame.mixer.music.set_pos(time_stamps[starting])
+   
+    
 
 def work(importance, names):
     """last_task = list(importance.keys())[-1] 
@@ -62,15 +84,14 @@ def get_digit(text, bot, top=-1):
             print("You entered not integer value. Time must be in a minute format")
 def timer(_minute):
     second = _minute * 60
-    print("Press 's' to stop")
+    print("Press and hold 's' to stop")
     while second > 0:
+        minute = second // 60
+        print(f"{minute:02}:{second - minute * 60:02}", end="\r")
         if keyboard.is_pressed('s'):
-                break
-        else:
-            minute = second // 60
-            print(f"{minute:02}:{second - minute * 60:02}", end="\r")
-            time.sleep(1)
-            second -= 1
+            break
+        time.sleep(1)
+        second -= 1
         
 
 def missions(dict, minimum, user_time, names ):
@@ -99,7 +120,7 @@ def missions(dict, minimum, user_time, names ):
         return minimum
 
 def resting():
-    play_mp3(menu_music_path ,-1)
+    play_mp3(menu_music_path ,-1, timestamps)
     user_time  = get_digit("Determine Resting Time, minimum is 1 minutes: ", 1)
     print("Now You are Resting...")
     timer(user_time )
