@@ -2,6 +2,7 @@ import time
 import pygame
 import keyboard
 import random
+import os
 
 timestamps = {
     '00:00': 0,
@@ -19,9 +20,11 @@ timestamps = {
     '54:13': 3253,
     '59:23': 3563
 }
+playlist_path = "./static/music/playlist"
+alarm_music_path = "./static/music/alarmer.mp3"
 menu_music_path = "./static/music/play_list.mp3"
 def main():
-    play_mp3(menu_music_path ,-1, timestamps)
+    play_mp3(menu_music_path ,rep = -1, time_stamps = timestamps)
     minimum = {0:15, 1:5, 2:40, 3:10}
     importance = {0:3, 1:4, 2:14, 3:3}
     names = {0:"Allah", 1:"Willing Power", 2:"Finance", 3:"Body"}
@@ -31,13 +34,30 @@ def main():
     display(names, importance)
     work(importance, names)
 
-def play_mp3(file_path, number_of_play, time_stamps):
+def random_play_mp3(file_path):
+    print("Time is up press 's' to continue with the other task: ", end="\r")
+    while True:
+        mp3_files = [f for f in os.listdir(file_path) if f.endswith('.mp3')]
+        random_mp3 = random.choice(mp3_files)
+        random_mp3_path = os.path.join(file_path, random_mp3)
+        play_mp3(random_mp3_path)
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
+            if keyboard.is_pressed('s'):
+                return None
+
+    
+def play_mp3(file_path, time_stamps = None, rep=0):
     pygame.mixer.init()
-    pygame.mixer.music.load(file_path)
-    starting = random.choice(list(time_stamps.keys()))
-    pygame.mixer.music.play(number_of_play)
-    if pygame.mixer.music.get_busy(): 
-        pygame.mixer.music.set_pos(time_stamps[starting])
+    pygame.mixer.music.load(file_path)    
+    if time_stamps:
+        starting = random.choice(list(time_stamps.keys()))
+        pygame.mixer.music.play(rep)
+        if pygame.mixer.music.get_busy(): 
+            pygame.mixer.music.set_pos(time_stamps[starting])
+    else:
+        pygame.mixer.music.play(rep)
+
    
     
 
@@ -120,11 +140,15 @@ def missions(dict, minimum, user_time, names ):
         return minimum
 
 def resting():
-    play_mp3(menu_music_path ,-1, timestamps)
+    play_mp3(menu_music_path , time_stamps = timestamps, rep = -1)
     user_time  = get_digit("Determine Resting Time, minimum is 1 minutes: ", 1)
     print("Now You are Resting...")
-    timer(user_time )
-    input("Time is up press Enter to continue with the other task: ")
+    timer(user_time)
+    if pygame.mixer.music.get_busy():
+            pygame.mixer.music.stop()
+    random_play_mp3(playlist_path)
+    
+    
 
 def extra():
     if get_digit("Is there any extra work? 0 for No, 1 for Yes: ", 0, 1) == 1:
