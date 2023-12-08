@@ -1,5 +1,6 @@
 import time
 import pygame
+import keyboard
 
 menu_music_path = "./static/music/song.mp3"
 def main():
@@ -61,16 +62,21 @@ def get_digit(text, bot, top=-1):
             print("You entered not integer value. Time must be in a minute format")
 def timer(_minute):
     second = _minute * 60
+    print("Press 's' to stop")
     while second > 0:
-        minute = second // 60
-        print(f"{minute:02}:{second - minute * 60:02}", end="\r")
-        time.sleep(1)
-        second -= 1
+        if keyboard.is_pressed('s'):
+                break
+        else:
+            minute = second // 60
+            print(f"{minute:02}:{second - minute * 60:02}", end="\r")
+            time.sleep(1)
+            second -= 1
+        
 
 def missions(dict, minimum, user_time, names ):
     for name in names:
         print(f"{name}. {names[name]}   [{name}]")
-    answer = get_digit("Here is your priorities. Please read and type the option that you are worst now.\n", 0, 3)
+    answer = get_digit("Here is your priorities. Please read and type the option that you are worst now: ", 0, 3)
     
     if user_time  > 70:  
         dict[answer] *= 2
@@ -106,7 +112,7 @@ def extra():
         print(f"Now It is time to work on extra work...")
         if pygame.mixer.music.get_busy():  # Check if music is currently playing
             pygame.mixer.music.stop()
-        timer(user_time )
+        timer(user_time)
         resting()
 
 def display(names, dict):
